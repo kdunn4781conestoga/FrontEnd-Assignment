@@ -4,14 +4,15 @@ import "./App.css";
 import { REDDIT_URL } from "./consts";
 import InputWrapper from "./components/InputWrapper/InputWrapper";
 import { SubReddit } from "./SubReddit";
+import { Post } from "./Post";
 
 function App() {
   const [subRedditSearch, setSubRedditSearch] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [results, setResults] = useState<SubReddit[]>([]);
-  const [preventSearch, setPreventSearch] = useState(false);
   const searchTimeout = useRef<number | null>(null);
+  const [preventSearch, setPreventSearch] = useState(false);
 
   const searchForSubReddit = async (searchName: string) => {
     setLoading(true);
@@ -41,8 +42,33 @@ function App() {
     setLoading(false);
   };
 
+  const searchForPosts = async (subRedditName: string) => {
+    setLoading(true);
+    setError("");
+    try {
+      const result = await fetch(
+        `${REDDIT_URL}/r/${subRedditName}/hot.json?limit=10`
+      );
+
+      if (result.ok) {
+        const content = await result.json();
+        console.log(content);
+      } else {
+        setError(result.statusText);
+      }
+    } catch {
+      setError("An error occurred while fetching results.");
+    }
+    setLoading(false);
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const searchValue = formData.get("srName") as string;
+
+    searchForPosts(searchValue);
   };
 
   useEffect(() => {
