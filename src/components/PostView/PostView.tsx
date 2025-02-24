@@ -4,12 +4,16 @@ import { Post } from "../../Post";
 
 interface PostViewProps {
   post: Post;
+  initialFav: boolean;
+  handleAddFavourite: (id: string, favourite: boolean) => void;
 }
 
 const PostView: React.FC<PostViewProps> = ({
   post,
+  initialFav,
+  handleAddFavourite,
 }) => {
-  const [favourited, setFavourited] = useState(false);
+  const [favourited, setFavourited] = useState(initialFav);
 
   const handleGoto = () => {
     window.open(post.url, "_blank");
@@ -25,6 +29,7 @@ const PostView: React.FC<PostViewProps> = ({
         <button
           onClick={() => {
             setFavourited(true);
+            handleAddFavourite(post.id, !favourited);
           }}
         >
           {favourited ? "Unfavourite" : "Favourite"}
