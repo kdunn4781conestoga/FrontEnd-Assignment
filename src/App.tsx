@@ -5,6 +5,7 @@ import { REDDIT_URL } from "./consts";
 import InputWrapper from "./components/InputWrapper/InputWrapper";
 import { SubReddit } from "./SubReddit";
 import { Post } from "./Post";
+import PostListView from "./components/PostListView/PostListView";
 
 function App() {
   const [subRedditSearch, setSubRedditSearch] = useState<string>("");
@@ -143,11 +144,7 @@ function App() {
           )}
         </div>
         <button type="submit">Search for Posts</button>
-        {
-          posts.map((post) => (
-            <p key={post.id}>{post.title}</p>
-          ))
-        }
+        <PostListView posts={posts} loading={false}/>
       </form>
     </main>
   );
