@@ -1,12 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { REDDIT_URL } from "./consts";
 import InputWrapper from "./components/InputWrapper/InputWrapper";
+import { SubReddit } from "./SubReddit";
 
 function App() {
   const [subRedditSearch, setSubRedditSearch] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [results, setResults] = useState<SubReddit[]>([]);
+  const [preventSearch, setPreventSearch] = useState(false);
   const searchTimeout = useRef<number | null>(null);
 
   const searchForSubReddit = async (searchName: string) => {
@@ -19,8 +23,15 @@ function App() {
 
       if (result.ok) {
         const content = await result.json();
+        const subReddits = content.data.children.map(
+          (child: any) =>
+            ({
+              id: child.data.id,
+              name: child.data.display_name,
+            } as SubReddit)
+        );
 
-        console.log(content);
+        setResults(subReddits);
       } else {
         setError(result.statusText);
       }
@@ -39,9 +50,14 @@ function App() {
       if (searchTimeout.current) {
         clearTimeout(searchTimeout.current);
       }
-      searchTimeout.current = window.setTimeout(() => {
-        searchForSubReddit(subRedditSearch);
-      }, 1000);
+
+      if (preventSearch) {
+        setPreventSearch(false);
+      } else {
+        searchTimeout.current = window.setTimeout(() => {
+          searchForSubReddit(subRedditSearch);
+        }, 1000);
+      }
     }
 
     return () => {
@@ -53,7 +69,7 @@ function App() {
   }, [subRedditSearch]);
 
   return (
-    <>
+    <main>
       <form onSubmit={handleSubmit}>
         <div className="searchContainer">
           <InputWrapper
@@ -67,10 +83,27 @@ function App() {
               setSubRedditSearch(event.currentTarget.value);
             }}
           />
+          {results.length > 0 && (
+            <ul className="dropdown">
+              {results.map((result) => (
+                <li
+                  className="item"
+                  key={result.id}
+                  onClick={() => {
+                    setPreventSearch(true);
+                    setSubRedditSearch(result.name);
+                    setResults([]);
+                  }}
+                >
+                  {result.name}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
         <button type="submit">Search for Posts</button>
       </form>
-    </>
+    </main>
   );
 }
 

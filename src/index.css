@@ -93,3 +93,25 @@ button:focus-visible {
   position: relative;
   width: 100%;
 }
+
+.dropdown {
+  position: absolute;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  background-color: whitesmoke;
+  z-index: 10;
+}
+
+.dropdown li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.dropdown li:hover {
+  background-color: #f0f0f0;
+}
