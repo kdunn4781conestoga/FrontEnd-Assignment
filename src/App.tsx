@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect, useRef } from "react";
 import { REDDIT_URL } from "./consts";
 import InputWrapper from "./components/InputWrapper/InputWrapper";
