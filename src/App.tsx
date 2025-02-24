@@ -17,7 +17,7 @@ function App() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [showFavouritePosts, setShowFavouritePosts] = useState<boolean>(false);
   const [favourites, setFavourites] = useState<string[]>([]);
-  const [favouritedPosts, setFavouritedPosts] = useState<Post[]>([]);
+  const [favouritedPosts] = useState<Post[]>([]);
 
   const searchForSubReddit = async (searchName: string) => {
     setLoading(true);
@@ -131,15 +131,6 @@ function App() {
       setFavourites(JSON.parse(savedFavorites));
     }
   }, []);
-
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (favourites.length > 0) {
-      }
-    };
-
-    fetchPosts();
-  }, [favourites]);
 
   return (
     <main>
