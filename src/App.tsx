@@ -13,6 +13,7 @@ function App() {
   const [results, setResults] = useState<SubReddit[]>([]);
   const searchTimeout = useRef<number | null>(null);
   const [preventSearch, setPreventSearch] = useState(false);
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const searchForSubReddit = async (searchName: string) => {
     setLoading(true);
@@ -45,6 +46,7 @@ function App() {
   const searchForPosts = async (subRedditName: string) => {
     setLoading(true);
     setError("");
+    setPosts([]);
     try {
       const result = await fetch(
         `${REDDIT_URL}/r/${subRedditName}/hot.json?limit=10`
@@ -52,7 +54,18 @@ function App() {
 
       if (result.ok) {
         const content = await result.json();
-        console.log(content);
+        const posts = content.data.children.map(
+          (child: any) =>
+            ({
+              id: child.data.id,
+              title: child.data.title,
+              score: child.data.score,
+              url: child.data.url,
+              subreddit: child.data.subreddit,
+            } as Post)
+        ) as Post[];
+
+        return posts;
       } else {
         setError(result.statusText);
       }
@@ -68,7 +81,9 @@ function App() {
     const formData = new FormData(event.currentTarget);
     const searchValue = formData.get("srName") as string;
 
-    searchForPosts(searchValue);
+    searchForPosts(searchValue).then((posts: Post[] | undefined) => {
+      setPosts(posts ?? []);
+    });
   };
 
   useEffect(() => {
@@ -128,6 +143,11 @@ function App() {
           )}
         </div>
         <button type="submit">Search for Posts</button>
+        {
+          posts.map((post) => (
+            <p key={post.id}>{post.title}</p>
+          ))
+        }
       </form>
     </main>
   );
